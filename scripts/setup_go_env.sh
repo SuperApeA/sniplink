@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+set -e # 任何一条命令执行失败（返回非 0 状态码），脚本就立刻终止运行，全称是 set -o errexit
 
 echo "Updating apt sources..."
 sudo apt update

@@ -30,7 +30,7 @@ func main() {
 	cfg := config.Load()
 
 	// MySQL
-	db, err := gorm.Open(mysql.Open(cfg.MySQLDSN), &gorm.Config{
+	db, err := gorm.Open(mysql.Open(cfg.MySQL.DSN), &gorm.Config{
 		Logger:         logger.Default.LogMode(logger.Warn),
 		TranslateError: true, // 开启后重复键会返回 gorm.ErrDuplicatedKey
 	})
@@ -43,11 +43,11 @@ func main() {
 
 	// Redis
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     cfg.RedisAddr,
-		Password: cfg.RedisPassword,
-		DB:       cfg.RedisDB,
+		Addr:     cfg.Redis.Addr,
+		Password: cfg.Redis.Password,
+		DB:       cfg.Redis.DB,
 	})
-	pingCtx, pingCancel := context.WithTimeout(context.Background(), 5*time.Second)
+	pingCtx, pingCancel := context.WithTimeout(context.Background(), cfg.Redis.PingTimeout)
 	if err := rdb.Ping(pingCtx).Err(); err != nil {
 		log.Fatalf("connect redis: %v", err)
 	}
@@ -56,14 +56,14 @@ func main() {
 	// 组装
 	repo := repository.NewLinkRepo(db)
 	linkCache := cache.NewLinkCache(rdb)
-	gen := idgen.New(rdb, "sniplink:idgen")
+	gen := idgen.New(rdb, cfg.Redis.IdgenKey)
 	svc := service.NewLinkService(repo, linkCache, gen, cfg)
 	defer svc.Close()
 
 	h := handler.NewLinkHandler(svc, cfg)
 
 	// 路由
-	gin.SetMode(gin.ReleaseMode)
+	gin.SetMode(cfg.Sniplink.LogMod)
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
 
@@ -71,7 +71,7 @@ func main() {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
-	api := r.Group("/api/v1", middleware.RateLimit(200, 400))
+	api := r.Group("/api/v1", middleware.RateLimit(cfg.Sniplink.RateLimitRps, cfg.Sniplink.RateLimitBurst))
 	{
 		api.POST("/links", h.Create)
 		api.GET("/links/:code", h.Get)
@@ -82,13 +82,13 @@ func main() {
 	r.NoRoute(h.HandleShort)
 
 	srv := &http.Server{
-		Addr:              cfg.Addr,
+		Addr:              cfg.Sniplink.Addr,
 		Handler:           r,
-		ReadHeaderTimeout: 5 * time.Second,
+		ReadHeaderTimeout: cfg.Sniplink.ReadHeaderTimeout,
 	}
 
 	go func() {
-		log.Printf("sniplink server listening on %s", cfg.Addr)
+		log.Printf("sniplink server listening on %s", cfg.Sniplink.Addr)
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			log.Fatalf("listen: %v", err)
 		}

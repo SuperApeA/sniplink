@@ -1,0 +1,13 @@
+sniplink:
+  addr: ":8080"
+  base_url: "http://localhost:8080"
+  read_header_timeout: "5s"
+mysql:
+  mysql_dsn: "root:root@tcp(127.0.0.1:3306)/sniplink?charset=utf8mb4&parseTime=True&loc=Local"
+redis:
+  redis_addr: "127.0.0.1:6379"
+  redis_password: ""
+  redis_db: 0
+  redis_ping_timeout: "5s"
+  cache_ttl: "1h"           # 注意，time.Duration 在 yaml 里通常写成字符串，Viper 可以解析
+  empty_cache_ttl: "60s"

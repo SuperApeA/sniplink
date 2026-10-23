@@ -59,7 +59,7 @@ func (h *LinkHandler) Create(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, CreateLinkResponse{
 		Code:      link.Code,
-		ShortURL:  strings.TrimRight(h.cfg.BaseURL, "/") + "/" + link.Code,
+		ShortURL:  strings.TrimRight(h.cfg.Sniplink.BaseURL, "/") + "/" + link.Code,
 		URL:       link.URL,
 		ExpiresAt: link.ExpiresAt,
 	})

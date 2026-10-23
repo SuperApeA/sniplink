@@ -121,7 +121,7 @@ func (s *LinkService) Resolve(ctx context.Context, code string) (string, error) 
 	link, err := s.repo.FindByCode(ctx, code)
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			_ = s.cache.SetNotFound(ctx, code, s.cfg.EmptyCacheTTL)
+			_ = s.cache.SetNotFound(ctx, code, s.cfg.Redis.EmptyCacheTTL)
 			return "", ErrNotFound
 		}
 		return "", err
@@ -129,12 +129,12 @@ func (s *LinkService) Resolve(ctx context.Context, code string) (string, error) 
 
 	now := time.Now()
 	if link.IsExpired(now) {
-		_ = s.cache.SetNotFound(ctx, code, s.cfg.EmptyCacheTTL)
+		_ = s.cache.SetNotFound(ctx, code, s.cfg.Redis.EmptyCacheTTL)
 		return "", ErrNotFound
 	}
 
 	// 3. 回填缓存(过期时间早于缓存 TTL 时按剩余时间设置)
-	ttl := s.cfg.CacheTTL
+	ttl := s.cfg.Redis.CacheTTL
 	if link.ExpiresAt != nil {
 		if remain := link.ExpiresAt.Sub(now); remain < ttl {
 			ttl = remain

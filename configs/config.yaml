@@ -1,0 +1,17 @@
+sniplink:
+  addr: ":8080"
+  base_url: "http://localhost:8080"
+  read_header_timeout: "5s"
+  rate_limit_rps: 800 # 每秒允许通过多少个请求
+  rate_limit_burst: 1600 # 瞬间通过的最大请求峰值，建议设为rate_limit_rps的两倍
+  log_mod: "debug" # debug/release/test
+mysql:
+  mysql_dsn: "root:root@tcp(127.0.0.1:3306)/sniplink?charset=utf8mb4&parseTime=True&loc=Local"
+redis:
+  redis_addr: "127.0.0.1:6379"
+  redis_password: ""
+  redis_db: 0
+  redis_ping_timeout: "5s"
+  redis_idgen_key: "sniplink:idgen"
+  cache_ttl: "1h"
+  empty_cache_ttl: "60s"
