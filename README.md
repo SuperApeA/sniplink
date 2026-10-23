@@ -89,11 +89,9 @@ curl -X POST http://localhost:8080/api/v1/links \
 
 ## 配置管理
 
-本项目采用 **Viper** 进行配置管理，支持三层优先级覆盖：
-
-1. 代码默认配置（兜底）
-2. `configs/config.yaml` 文件配置（本地开发）
-3. **环境变量覆盖**（生产部署）
+本项目采用 **Viper** 进行配置管理：
+1. `configs/config.yaml` 文件配置（本地开发）
+2. **环境变量覆盖**（生产部署）
 
 生产环境可通过注入环境变量动态替换配置（如 `MYSQL_DSN`, `REDIS_ADDR` 等），实现镜像复用与敏感信息隔离。
 
