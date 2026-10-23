@@ -1,5 +1,5 @@
 # sniplink
-
+一个用 Go 语言编写的高并发 URL 短链服务项目‌
 A high-concurrency URL shortener written in Go.
 
 ## 特性
@@ -12,23 +12,10 @@ A high-concurrency URL shortener written in Go.
 
 ## 架构
 
-[架构图:客户端 -> Gin -> Service -> Redis/MySQL]
-
-详细设计与取舍见 [docs/architecture.md](docs/architecture.md)。
-
-## 性能
-
-压测环境:本机 8 核 / 16GB,MySQL 与 Redis 同机 Docker。
-
-| 场景             | QPS  | P99 延迟 |
-| ---------------- | ---- | -------- |
-| 跳转(缓存命中)   | XXXX | XX ms    |
-| 跳转(缓存未命中) | XXX  | XX ms    |
-| 创建短链         | XXX  | XX ms    |
-
-压测命令与调优过程见 [docs/bench.md](docs/bench.md)。
-
-**注意**:表格里的 XXXX 必须是你真跑出来的数字。哪怕只有 3000 QPS,写真实数字 + 标注环境,比虚报一个 5 万更可信,因为面试官会追问"你怎么压的、瓶颈在哪"。
+```
+客户端 ──> Gin ──> Service ──┬─> Redis(短码→长链缓存 + 发号器)
+                            └─> MySQL(持久化)
+```
 
 ## 快速开始
 
@@ -40,11 +27,17 @@ A high-concurrency URL shortener written in Go.
 bash scripts/setup_go_env.sh
 ```
 
-#### 2.安装数据库和启动服务
+### 2.安装数据库和启动服务
 
 ```bash
-docker compose up -d
-go run ./cmd/server
+make migrate #建表
+make docker-up #安装数据库并启动
+make run #启动服务
+```
+
+### **3.测试接口**
+
+```
 curl -X POST localhost:8080/api/v1/links -d '{"url":"https://go.dev"}'
 ```
 
