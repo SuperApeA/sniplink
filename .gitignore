@@ -1,0 +1,14 @@
+# IDE 配置
+.idea/
+.vscode/
+
+# 编译生成的二进制文件
+sniplink
+sniplink-linux
+
+# 本地环境变量文件
+.env
+
+# 日志和测试文件
+*.log
+coverage.out
