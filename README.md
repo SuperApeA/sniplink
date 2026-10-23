@@ -1,6 +1,5 @@
 # sniplink
-一个用 Go 语言编写的高并发 URL 短链服务项目‌
-A high-concurrency URL shortener written in Go.
+一个用 Go 语言编写的高并发 URL 短链服务项目‌。
 
 ## 特性
 
