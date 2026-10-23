@@ -4,14 +4,21 @@ sniplink:
   read_header_timeout: "5s"
   rate_limit_rps: 800 # 每秒允许通过多少个请求
   rate_limit_burst: 1600 # 瞬间通过的最大请求峰值，建议设为rate_limit_rps的两倍
-  log_mod: "debug" # debug/release/test
+  # TODO: 这里开发环境用debug，部署环境改成release
+  log_mod: "debug" # debug release test
 mysql:
-  mysql_dsn: "root:root@tcp(127.0.0.1:3306)/sniplink?charset=utf8mb4&parseTime=True&loc=Local"
+  dsn: "root:root@tcp(127.0.0.1:3306)/sniplink?charset=utf8mb4&parseTime=True&loc=Local"
 redis:
-  redis_addr: "127.0.0.1:6379"
-  redis_password: ""
-  redis_db: 0
-  redis_ping_timeout: "5s"
-  redis_idgen_key: "sniplink:idgen"
+  addr: "127.0.0.1:6379"
+  password: ""
+  db: 0
+  pool_size: 200 # 最大连接数。根据你的 QPS 估算，一般 100-500 足够
+  min_idle_conns: 10 # 最小空闲连接数。提前建好连接（预热），防止突发流量时频繁建连导致延迟抖动
+  dial_timeout: "5s" # 建立连接超时
+  read_timeout: "3s" # 读超时
+  write_timeout: "3s" # 写超时
+  pool_timeout: "4s" # 连接池满时，客户端等待可用连接的最大超时时间
+  ping_timeout: "5s"
+  idgen_key: "sniplink:idgen"
   cache_ttl: "1h"
   empty_cache_ttl: "60s"

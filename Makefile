@@ -38,6 +38,10 @@ docker-up:
 docker-down:
 	docker compose down
 
+# 建立表结构
+migrate:
+	mysql -h 127.0.0.1 -u root -proot sniplink < scripts/migrate.sql
+
 # 清理编译产物
 clean:
 	rm -f sniplink sniplink-linux
