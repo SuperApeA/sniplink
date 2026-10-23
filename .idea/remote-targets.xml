@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteTargetsManager">
+    <option name="projectDefaultTargetUuid" value="98957774-046a-44eb-b97d-64e9badf6344" />
+    <targets>
+      <target name="WSL - Ubuntu-24.04" type="wsl" uuid="98957774-046a-44eb-b97d-64e9badf6344">
+        <config>
+          <option name="distributionMsId" value="Ubuntu-24.04" />
+          <option name="projectRootOnTarget" value="{exitCode=0, timeout=false, cancelled=false, stdout=/mnt/c/code/software/JetBrains/GoLand 2019.2.3/jbr/bin&#10;, stderr=}/sniplink" />
+        </config>
+        <ContributedStateBase type="GoLanguageRuntime">
+          <config>
+            <option name="goPath" value="/home/aaj-linux/go" />
+            <option name="goRoot" value="/usr/local/bin/go" />
+          </config>
+        </ContributedStateBase>
+      </target>
+    </targets>
+  </component>
+</project>
