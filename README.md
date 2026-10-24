@@ -140,4 +140,4 @@ curl -X POST http://localhost:8080/api/v1/links \
 |       **400**        |       9,595        |        42.47 ms        |        122.17 ms        | QPS 微降，P99 破 100ms，CPU 开始吃力。                      |
 |       **800**        |       9,699        |        84.73 ms        |        257.76 ms        | 吞吐量依然坚挺，但长尾延迟明显，请求开始排队。              |
 |       **1600**       |       9,425        |       173.23 ms        |        528.21 ms        | 达到硬件物理极限，P99 突破 500ms，出现少量 Socket Timeout。 |
-> **注**：测试截图查看sniplink/test
+> **注**：测试详情及截图查看sniplink/test/benchmark目录
