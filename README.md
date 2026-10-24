@@ -190,3 +190,16 @@ curl -X POST http://localhost:8080/api/v1/links \
 |       **800**        |       9,699        |        84.73 ms        |        257.76 ms        | 吞吐量依然坚挺，但长尾延迟明显，请求开始排队。              |
 |       **1600**       |       9,425        |       173.23 ms        |        528.21 ms        | 达到硬件物理极限，P99 突破 500ms，出现少量 Socket Timeout。 |
 > **注**：“测试详情及截图可查看 `sniplink/test/benchmark` 目录”
+
+
+## 项目地址
+
+- **GitHub**: [https://github.com/SuperApeA/sniplink](https://github.com/SuperApeA/sniplink)
+- **Gitee**: [https://gitee.com/SupermusicA/sniplink](https://gitee.com/SupermusicA/sniplink)
+
+## 关于作者
+
+- **GitHub**: [@SuperApeA](https://github.com/SuperApeA)
+- **Gitee**: [@SupermusicA](https://gitee.com/SupermusicA)
+
+欢迎提交 Issue，如果这个项目对你有帮助，请给个 ⭐️ Star 支持一下！

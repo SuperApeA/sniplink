@@ -198,3 +198,16 @@ By varying the number of concurrent connections (`-c`), the throughput curve is 
 | **1600** | 9,425 | 173.23 ms | 528.21 ms | Hits the hardware physical limit, P99 exceeds 500 ms, a few Socket Timeouts occur. |
 
 > **Note**: See the `sniplink/test/benchmark` directory for test details and screenshots.
+
+
+## Project Links
+
+- **GitHub**: [https://github.com/SuperApeA/sniplink](https://github.com/SuperApeA/sniplink)
+- **Gitee**: [https://gitee.com/SupermusicA/sniplink](https://gitee.com/SupermusicA/sniplink)
+
+## Author
+
+- **GitHub**: [@SuperApeA](https://github.com/SuperApeA)
+- **Gitee**: [@SupermusicA](https://gitee.com/SupermusicA)
+
+Feel free to open an Issue. If this project helps you, please give it a ⭐️ Star!
