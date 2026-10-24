@@ -77,7 +77,7 @@ make run        # 启动 sniplink 服务 (依赖 go run)
 
 *注：默认开启 GORM `AutoMigrate` 自动建表。生产环境建议关闭，使用 `make migrate` 配合 SQL 脚本手动建表。*
 
-### 3. 公网访问 (基于 Cloudflare Tunnel，免费)
+### 3. 公网访问 (基于 Cloudflare Tunnel，免费，仅用于开发阶段测试)
 
 本项目支持通过 Cloudflare Tunnel (内网穿透) 将本地服务快速暴露到公网，无需购买云服务器或公网 IP，即可拥有带 HTTPS 的真实域名。
 
@@ -111,7 +111,8 @@ https://petite-arnold-novel-mem.trycloudflare.com
 ```
 
 **直接在浏览器访问该地址，即可在公网上体验你的短链服务！**
-
+*注：由于演示环境使用的 Cloudflare 临时隧道域名较长，导致生成的短链在总长度上并不算‘短’。在生产环境中，只需将服务绑定到极短的自定义域名（如 a.cn）即可实现真正的极简短链。*
+*这短链比长链还长，有些黑色幽默了，😄，不过只需自己去购买一个短域名绑定就好，生成的短链就是->'短域名/自定义名称'，这里可以参考bilibili的bt2.tv*
 > **注意事项**：
 >
 > 1. **临时隧道**：`trycloudflare` 提供的是临时测试域名，每次重启 `cloudflared` 命令行，域名都会发生变化。
