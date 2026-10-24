@@ -8,6 +8,7 @@
 [![Cache](https://img.shields.io/badge/Cache-Redis-DC382D?style=flat-square&logo=redis&logoColor=white)](https://redis.io)
 [![Deploy](https://img.shields.io/badge/Deploy-Docker-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com)
 
+![首页示意图](https://foruda.gitee.com/images/1792857357279554857/bb4f3e52_7824773.png "image-20261024232731937.png")
 ## 特性
 
 - **短码生成**：Redis `INCR` 发号 + Base62 编码，DB 唯一索引兜底，天然无冲突。
@@ -50,6 +51,8 @@ sniplink/
 │   ├── router/         # 路由注册与装配
 │   └── service/        # 核心业务逻辑
 ├── scripts/            # 环境初始化脚本 (setup_go_env.sh)
+├── test/            # 项目测试
+├── web/            # 前端静态资源
 ├── docker-compose.yml  # 本地开发中间件编排 (MySQL/Redis)
 └── Makefile            # 自动化构建与运行脚本
 ```
