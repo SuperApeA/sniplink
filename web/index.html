@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sniplink - 极简短链服务</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --bg: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text: #1F2937;
+            --border: #D1D5DB;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        h1 { color: var(--primary); margin-bottom: 5px; }
+        p.subtitle { color: #6B7280; margin-bottom: 30px; }
+        .card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
+        .card h2 { margin-top: 0; font-size: 1.2rem; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: 500; font-size: 0.9rem; }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        input[type="text"]:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2); }
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        button:hover { background: var(--primary-hover); }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: #ECFDF5;
+            border: 1px solid #10B981;
+            border-radius: 6px;
+            display: none;
+            word-break: break-all;
+        }
+        .result.error { background: #FEF2F2; border-color: #EF4444; color: #B91C1C; }
+        .result a { color: var(--primary); font-weight: bold; text-decoration: none; font-size: 1.1rem;}
+        .result a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+
+    <h1>sniplink ✂️</h1>
+    <p class="subtitle">极简、高效的短链生成与管理服务</p>
+
+    <!-- 创建短链模块 -->
+    <div class="card">
+        <h2>🔗 生成短链</h2>
+        <div class="form-group">
+            <label>目标长链接 (URL)</label>
+            <input type="text" id="longUrl" placeholder="https://golang.google.cn">
+        </div>
+        <div class="form-group">
+            <label>自定义短码 (可选，不填则自动生成)</label>
+            <input type="text" id="customCode" placeholder="如: golang，限1-16位字母数字">
+        </div>
+        <button onclick="createLink()">立即生成</button>
+        
+        <div id="createResult" class="result">
+            <div style="margin-bottom: 8px;">生成成功！你的短链是：</div>
+            <a id="shortLink" href="#" target="_blank"></a>
+        </div>
+    </div>
+
+    <!-- 查询详情模块 -->
+    <div class="card">
+        <h2>📊 查看统计</h2>
+        <div class="form-group">
+            <label>输入短码 (Code)</label>
+            <input type="text" id="queryCode" placeholder="输入刚刚生成的短码">
+        </div>
+        <button onclick="queryLink()">查询详情</button>
+
+        <div id="queryResult" class="result" style="background: #EFF6FF; border-color: #3B82F6; color: #1E3A8A;">
+            <div id="queryData"></div>
+        </div>
+    </div>
+
+    <script>
+        // 后端跑在 localhost:8080
+        // 如果以后部署到线上，改成域名即可
+        const API_BASE = "http://localhost:8080/api/v1";
+
+        // 创建短链
+        async function createLink() {
+            const url = document.getElementById('longUrl').value;
+            const customCode = document.getElementById('customCode').value;
+            const resultDiv = document.getElementById('createResult');
+            const linkElem = document.getElementById('shortLink');
+
+            if (!url) {
+                alert("请输入长链接！");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/links`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        url: url,
+                        custom_code: customCode
+                    })
+                });
+
+                const data = await response.json();
+                
+                resultDiv.style.display = 'block';
+                if (response.ok) {
+                    resultDiv.className = 'result';
+                    linkElem.href = data.short_url;
+                    linkElem.innerText = data.short_url;
+                    // 自动把刚生成的短码填入下面的查询框，方便测试
+                    document.getElementById('queryCode').value = data.code;
+                } else {
+                    resultDiv.className = 'result error';
+                    linkElem.removeAttribute('href');
+                    linkElem.innerText = data.error || "生成失败";
+                }
+            } catch (error) {
+                console.error(error);
+                alert("网络请求失败，请确保后端服务已启动！");
+            }
+        }
+
+        // 查询统计
+        async function queryLink() {
+            const code = document.getElementById('queryCode').value;
+            const resultDiv = document.getElementById('queryResult');
+            const dataDiv = document.getElementById('queryData');
+
+            if (!code) {
+                alert("请输入短码！");
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/links/${code}`);
+                const data = await response.json();
+
+                resultDiv.style.display = 'block';
+                if (response.ok) {
+                    dataDiv.innerHTML = `
+                        <p><b>短码:</b> ${data.code}</p>
+                        <p><b>原始链接:</b> <a href="${data.url}" target="_blank">${data.url}</a></p>
+                        <p><b>点击次数:</b> <span style="font-size:1.2rem; color:#E11D48; font-weight:bold;">${data.click_count}</span></p>
+                        <p><b>创建时间:</b> ${new Date(data.created_at).toLocaleString()}</p>
+                    `;
+                } else {
+                    dataDiv.innerHTML = `<span style="color:#B91C1C">${data.error || "未找到该短链"}</span>`;
+                }
+            } catch (error) {
+                console.error(error);
+                alert("网络请求失败！");
+            }
+        }
+    </script>
+</body>
+</html>
