@@ -90,11 +90,9 @@
             <input type="text" id="customCode" placeholder="如: golang，限1-16位字母数字">
         </div>
         <button onclick="createLink()">立即生成</button>
-        
-        <div id="createResult" class="result">
-            <div style="margin-bottom: 8px;">生成成功！你的短链是：</div>
-            <a id="shortLink" href="#" target="_blank"></a>
-        </div>
+
+        <!-- 生成结果容器 -->
+        <div id="createResult" class="result" style="display: none;"></div>
     </div>
 
     <!-- 查询详情模块 -->
@@ -106,9 +104,8 @@
         </div>
         <button onclick="queryLink()">查询详情</button>
 
-        <div id="queryResult" class="result" style="background: #EFF6FF; border-color: #3B82F6; color: #1E3A8A;">
-            <div id="queryData"></div>
-        </div>
+        <!-- 查询结果容器 -->
+        <div id="queryResult" class="result" style="display: none; background: #EFF6FF; border-color: #3B82F6; color: #1E3A8A;"></div>
     </div>
 
     <script>
@@ -116,12 +113,24 @@
         // 采用相对路径，效果是域名/api/v1
         const API_BASE = "/api/v1";
 
+        // 错误码翻译字典
+        function translateError(errMsg) {
+            const dict = {
+                "invalid url, must be http/https": "链接格式不正确，必须以 http 或 https 开头",
+                "invalid custom_code, must match [0-9A-Za-z_-]{1,16}": "自定义短码格式错误，限 1-16 位字母、数字或下划线",
+                "custom code already taken": "该自定义短码已被占用，请换一个吧",
+                "link not found": "短链不存在或已过期",
+                "internal error": "服务器开小差了，请稍后再试"
+            };
+            // 如果字典里有翻译，就返回中文；如果没有，就把原报错返回或显示未知错误
+            return dict[errMsg] || errMsg || "未知错误";
+        }
+
         // 创建短链
         async function createLink() {
             const url = document.getElementById('longUrl').value;
             const customCode = document.getElementById('customCode').value;
             const resultDiv = document.getElementById('createResult');
-            const linkElem = document.getElementById('shortLink');
 
             if (!url) {
                 alert("请输入长链接！");
@@ -139,19 +148,22 @@
                 });
 
                 const data = await response.json();
-                
+
                 resultDiv.style.display = 'block';
                 if (response.ok) {
+                    // 成功状态：绿色框，显示短链
                     resultDiv.className = 'result';
-                    const shortUrl = window.location.origin + '/' + data.code;
-                    linkElem.href = shortUrl;
-                    linkElem.innerText = shortUrl;
-                    // 自动把刚生成的短码填入下面的查询框，方便测试
+                    const shortUrl = data.short_url; // 直接使用后端返回的完整短链
+                    resultDiv.innerHTML = `
+                        <div style="margin-bottom: 8px;">🎉 生成成功！你的短链是：</div>
+                        <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+                    `;
+                    // 自动填充查询框
                     document.getElementById('queryCode').value = data.code;
                 } else {
+                    // 失败状态：红色框，显示错误信息
                     resultDiv.className = 'result error';
-                    linkElem.removeAttribute('href');
-                    linkElem.innerText = data.error || "生成失败";
+                    resultDiv.innerHTML = `<div>❌ 生成失败：${translateError(data.error)}</div>`;
                 }
             } catch (error) {
                 console.error(error);
@@ -163,7 +175,6 @@
         async function queryLink() {
             const code = document.getElementById('queryCode').value;
             const resultDiv = document.getElementById('queryResult');
-            const dataDiv = document.getElementById('queryData');
 
             if (!code) {
                 alert("请输入短码！");
@@ -173,17 +184,21 @@
             try {
                 const response = await fetch(`${API_BASE}/links/${code}`);
                 const data = await response.json();
-
                 resultDiv.style.display = 'block';
+
                 if (response.ok) {
-                    dataDiv.innerHTML = `
+                    // 成功：展示统计数据
+                    resultDiv.className = 'result';
+                    resultDiv.innerHTML = `
                         <p><b>短码:</b> ${data.code}</p>
-                        <p><b>原始链接:</b> <a href="${data.url}" target="_blank">${data.url}</a></p>
+                        <p><b>原始链接:</b> <a href="${data.url}" target="_blank" style="font-size: 1rem;">${data.url}</a></p>
                         <p><b>点击次数:</b> <span style="font-size:1.2rem; color:#E11D48; font-weight:bold;">${data.click_count}</span></p>
                         <p><b>创建时间:</b> ${new Date(data.created_at).toLocaleString()}</p>
                     `;
                 } else {
-                    dataDiv.innerHTML = `<span style="color:#B91C1C">${data.error || "未找到该短链"}</span>`;
+                    // 失败：提示未找到
+                    resultDiv.className = 'result error';
+                    resultDiv.innerHTML = `<div>❌ 查询失败：${translateError(data.error)}</div>`;
                 }
             } catch (error) {
                 console.error(error);
