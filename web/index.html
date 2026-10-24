@@ -113,8 +113,8 @@
 
     <script>
         // 后端跑在 localhost:8080
-        // 如果以后部署到线上，改成域名即可
-        const API_BASE = "http://localhost:8080/api/v1";
+        // 采用相对路径，效果是域名/api/v1
+        const API_BASE = "/api/v1";
 
         // 创建短链
         async function createLink() {
@@ -143,8 +143,9 @@
                 resultDiv.style.display = 'block';
                 if (response.ok) {
                     resultDiv.className = 'result';
-                    linkElem.href = data.short_url;
-                    linkElem.innerText = data.short_url;
+                    const shortUrl = window.location.origin + '/' + data.code;
+                    linkElem.href = shortUrl;
+                    linkElem.innerText = shortUrl;
                     // 自动把刚生成的短码填入下面的查询框，方便测试
                     document.getElementById('queryCode').value = data.code;
                 } else {

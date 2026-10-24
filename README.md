@@ -77,7 +77,49 @@ make run        # 启动 sniplink 服务 (依赖 go run)
 
 *注：默认开启 GORM `AutoMigrate` 自动建表。生产环境建议关闭，使用 `make migrate` 配合 SQL 脚本手动建表。*
 
-### 3. 测试接口
+### 3. 公网访问 (基于 Cloudflare Tunnel，免费)
+
+本项目支持通过 Cloudflare Tunnel (内网穿透) 将本地服务快速暴露到公网，无需购买云服务器或公网 IP，即可拥有带 HTTPS 的真实域名。
+
+**3.1 安装 cloudflared (通过 APT 源)**
+
+推荐使用官方 APT 源安装，以保证后续能随系统自动更新，且具备签名校验（更安全）：
+
+```bash
+# 添加 Cloudflare 官方 GPG 签名密钥
+sudo mkdir -p --mode=0755 /usr/share/keyrings
+curl -fsSL https://pkg.cloudflare.com/cloudflare-public-v2.gpg | sudo tee /usr/share/keyrings/cloudflare-public-v2.gpg >/dev/null
+# 添加 APT 软件源
+echo 'deb [signed-by=/usr/share/keyrings/cloudflare-public-v2.gpg] https://pkg.cloudflare.com/cloudflared any main' | sudo tee /etc/apt/sources.list.d/cloudflared.list
+# 更新源并安装
+sudo apt-get update && sudo apt-get install -y cloudflared
+```
+
+**3.2 启动隧道**
+确保你的 sniplink 服务 (`make run`) 正在 `8080` 端口运行，打开一个新的终端窗口，执行：
+
+```
+cloudflared tunnel --url http://localhost:8080
+```
+
+**3.3 获取公网地址**
+终端会输出一段带有 `trycloudflare.com` 的地址，例如：
+
+```
+Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):
+https://petite-arnold-novel-mem.trycloudflare.com
+```
+
+**直接在浏览器访问该地址，即可在公网上体验你的短链服务！**
+
+> **注意事项**：
+>
+> 1. **临时隧道**：`trycloudflare` 提供的是临时测试域名，每次重启 `cloudflared` 命令行，域名都会发生变化。
+> 2. **保持在线**：只要你的本地电脑关机，或者关闭了 `cloudflared` 终端，公网链接就会立即失效。
+> 3. **动态域名适配**：由于公网域名会变化，本项目前端 (`web/index.html`) 已采用 `window.location.origin` 动态拼接短链域名，后端 API 采用相对路径请求，实现了**无需修改任何代码**即可无缝适配公网部署。
+> 4. **真实 IP 获取**：得益于 Gin 框架默认信任本地代理（`TrustedProxies`），当请求经由本地的 `cloudflared` 转发时，Gin 能自动从 HTTP 头的 `CF-Connecting-IP` 或 `X-Forwarded-For` 中提取出用户的真实公网 IP。这意味着后续如果要做基于 IP 的防刷限流，是可以直接精准定位到真实用户的。
+
+### 4. 测试接口（本地）
 
 **创建短链：**
 

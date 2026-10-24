@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
 	"sniplink/internal/config"
@@ -15,6 +16,8 @@ func Setup(cfg *config.Config, h *handler.LinkHandler) *gin.Engine {
 	gin.SetMode(cfg.Sniplink.LogMod)
 	r := gin.New()
 	r.Use(gin.Logger(), gin.Recovery())
+	// 虽然当前前后端同源部署无需 CORS，但为了兼容本地前后端分离开发和未来 API 开放，保留跨域中间件
+	r.Use(cors.Default())
 
 	// 1. 托管前端静态资源 (必须在 NoRoute 之前)
 	setStaticFile(r)
