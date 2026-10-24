@@ -1,3 +1,4 @@
+简体中文 | [English](README.en.md)
 # sniplink
 一个用 Go 语言编写的高并发 URL 短链服务项目‌。
 
@@ -38,23 +39,25 @@
 
 ```
 sniplink/
-├── cmd/server/         # 程序入口，依赖注入与生命周期管理
-├── configs/            # 配置文件模板 (config.example.yaml)
-├── internal/           # 内部业务逻辑（禁止外部 import）
-│   ├── cache/          # Redis 缓存封装
-│   ├── config/         # Viper 配置加载与解析
-│   ├── handler/        # HTTP 控制器 (Gin)
-│   ├── idgen/          # 基于 Redis 的分布式发号器
-│   ├── middleware/     # 限流等中间件
-│   ├── model/          # GORM 数据库模型
-│   ├── repository/     # MySQL 数据访问层 (DAO)
-│   ├── router/         # 路由注册与装配
-│   └── service/        # 核心业务逻辑
-├── scripts/            # 环境初始化脚本 (setup_go_env.sh)
-├── test/            # 项目测试
-├── web/            # 前端静态资源
-├── docker-compose.yml  # 本地开发中间件编排 (MySQL/Redis)
-└── Makefile            # 自动化构建与运行脚本
+├── cmd/server/             # 程序入口，依赖注入与生命周期管理
+├── configs/                # 配置文件模板 (config.example.yaml)
+├── internal/               # 内部业务逻辑（禁止外部 import）
+│   ├── cache/              # Redis 缓存封装
+│   ├── config/             # Viper 配置加载与解析
+│   ├── handler/            # HTTP 控制器 (Gin)
+│   ├── idgen/              # 基于 Redis 的分布式发号器
+│   ├── middleware/         # 限流等中间件
+│   ├── model/              # GORM 数据库模型
+│   ├── repository/         # MySQL 数据访问层 (DAO)
+│   ├── router/             # 路由注册与装配
+│   └── service/            # 核心业务逻辑
+├── scripts/                # 环境初始化脚本 (setup_go_env.sh)
+├── test/                   # 项目测试
+│   ├── benchmark/          # 压测脚本与报告
+│   └── cloudflare-tunnel/  # 公网映射测试
+├── web/                    # 前端静态资源
+├── docker-compose.yml      # 本地开发中间件编排 (MySQL/Redis)
+└── Makefile                # 自动化构建与运行脚本
 ```
 
 ## 快速开始
@@ -63,7 +66,7 @@ sniplink/
 
 如果是全新的 Ubuntu 机器，一键初始化 Go 环境、国内代理及构建工具：
 
-```
+```bash
 bash scripts/setup_go_env.sh
 ```
 
@@ -71,7 +74,7 @@ bash scripts/setup_go_env.sh
 
 ```
 make docker-up  # 启动 MySQL 和 Redis 容器
-make migrate #建表
+make migrate    # 建表
 make run        # 启动 sniplink 服务 (依赖 go run)
 ```
 
@@ -186,4 +189,4 @@ curl -X POST http://localhost:8080/api/v1/links \
 |       **400**        |       9,595        |        42.47 ms        |        122.17 ms        | QPS 微降，P99 破 100ms，CPU 开始吃力。                      |
 |       **800**        |       9,699        |        84.73 ms        |        257.76 ms        | 吞吐量依然坚挺，但长尾延迟明显，请求开始排队。              |
 |       **1600**       |       9,425        |       173.23 ms        |        528.21 ms        | 达到硬件物理极限，P99 突破 500ms，出现少量 Socket Timeout。 |
-> **注**：测试详情及截图查看sniplink/test/benchmark目录
+> **注**：“测试详情及截图可查看 `sniplink/test/benchmark` 目录”
