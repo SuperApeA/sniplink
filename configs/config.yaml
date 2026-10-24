@@ -1,6 +1,5 @@
 sniplink:
   addr: ":8080"
-  base_url: "http://localhost:8080"
   read_header_timeout: "5s"
   rate_limit_rps: 800 # 每秒允许通过多少个请求
   rate_limit_burst: 1600 # 瞬间通过的最大请求峰值，建议设为rate_limit_rps的两倍

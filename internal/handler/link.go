@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -57,9 +58,18 @@ func (h *LinkHandler) Create(c *gin.Context) {
 		return
 	}
 
+	// 动态判断协议 (兼容 Cloudflare / Nginx 等反向代理)
+	scheme := "http"
+	if c.Request.TLS != nil || c.GetHeader("X-Forwarded-Proto") == "https" {
+		scheme = "https"
+	}
+	// 动态获取当前请求的 Host (比如 localhost:8080 或 xxx.trycloudflare.com)
+	host := c.Request.Host
+	// 拼装完整的短链
+	shortURL := fmt.Sprintf("%s://%s/%s", scheme, host, link.Code)
 	c.JSON(http.StatusCreated, CreateLinkResponse{
 		Code:      link.Code,
-		ShortURL:  strings.TrimRight(h.cfg.Sniplink.BaseURL, "/") + "/" + link.Code,
+		ShortURL:  shortURL,
 		URL:       link.URL,
 		ExpiresAt: link.ExpiresAt,
 	})

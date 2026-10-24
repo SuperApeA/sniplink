@@ -24,7 +24,6 @@ type Config struct {
 // SniplinkConfig Sniplink的配置
 type SniplinkConfig struct {
 	Addr              string        `mapstructure:"addr"`
-	BaseURL           string        `mapstructure:"base_url"`
 	ReadHeaderTimeout time.Duration `mapstructure:"read_header_timeout"`
 	RateLimitRps      float64       `mapstructure:"rate_limit_rps"`
 	RateLimitBurst    int           `mapstructure:"rate_limit_burst"`
