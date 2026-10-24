@@ -156,7 +156,14 @@
                     const shortUrl = data.short_url; // 直接使用后端返回的完整短链
                     resultDiv.innerHTML = `
                         <div style="margin-bottom: 8px;">🎉 生成成功！你的短链是：</div>
+                        <!-- 链接独立一行，保证长链接自动折行不会挤压其他元素 -->
+                        <div style="word-break: break-all; margin-bottom: 10px;">
                         <a href="${shortUrl}" target="_blank">${shortUrl}</a>
+                        </div>
+                        <!-- 底部按钮容器，justify-content: flex-end 强制按钮靠右 -->
+                        <div style="display: flex; justify-content: flex-end; width: 100%;">
+                            <button onclick="copyText('${shortUrl}', this)" style="width: auto; padding: 6px 16px; font-size: 0.9rem; background: #10B981; color: white; border: none; border-radius: 6px; cursor: pointer;">复制</button>
+                        </div>
                     `;
                     // 自动填充查询框
                     document.getElementById('queryCode').value = data.code;
@@ -203,6 +210,36 @@
             } catch (error) {
                 console.error(error);
                 alert("网络请求失败！");
+            }
+        }
+
+        // 复制到剪贴板功能
+        async function copyText(text, btnElement) {
+            try {
+                // 现代浏览器 API (必须在 HTTPS 或 localhost 环境下)
+                await navigator.clipboard.writeText(text);
+
+                // 视觉反馈：改变按钮文字和颜色
+                const originalText = btnElement.innerText;
+                btnElement.innerText = "✅ 已复制";
+                btnElement.style.background = "#059669"; // 深一点的绿色
+
+                // 2秒后恢复原状
+                setTimeout(() => {
+                    btnElement.innerText = originalText;
+                    btnElement.style.background = "#10B981";
+                }, 2000);
+
+            } catch (err) {
+                console.error('复制失败:', err);
+                // 降级方案（针对极少数不支持 clipboard API 的老旧浏览器）
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand("copy");
+                document.body.removeChild(textArea);
+                alert("已复制到剪贴板！");
             }
         }
     </script>
