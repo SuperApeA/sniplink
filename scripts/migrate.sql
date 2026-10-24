@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `links` (
     `id` bigint unsigned NOT NULL AUTO_INCREMENT COMMENT '主键ID',
-    `code` varchar(16) NOT NULL COMMENT '短码',
+    `code` varchar(16) COLLATE utf8mb4_bin NOT NULL COMMENT '短码',
     `url` varchar(2048) NOT NULL COMMENT '原始长链接',
     `click_count` bigint unsigned NOT NULL DEFAULT '0' COMMENT '点击次数',
     `expires_at` datetime(3) DEFAULT NULL COMMENT '过期时间',

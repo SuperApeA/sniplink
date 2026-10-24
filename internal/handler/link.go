@@ -117,6 +117,7 @@ func (h *LinkHandler) HandleShort(c *gin.Context) {
 	c.Redirect(http.StatusFound, target) // 302
 }
 
+// TODO: 错误返回不直观，后续有前端页面后，这里要返回错误码
 func mapErr(err error) (int, string) {
 	switch {
 	case errors.Is(err, service.ErrInvalidURL):

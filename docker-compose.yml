@@ -21,7 +21,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: sniplink-redis
-    command: ["redis-server", "--appendonly", "yes"]
+    command: ["redis-server", "--appendonly", "yes", "--no-appendfsync-on-rewrite", "yes"] # 防止 AOF 后台重写时阻塞 Redis 主线程
     ports:
       - "127.0.0.1:6379:6379"
     volumes:
